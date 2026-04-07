@@ -1,3 +1,9 @@
+import activities from '@/data/activities';
+import {
+  getDefaultYearSummaryYear,
+  getSummaryYears,
+} from '@/utils/yearSummary';
+
 interface ISiteMetadataResult {
   siteTitle: string;
   siteUrl: string;
@@ -14,6 +20,12 @@ const getBasePath = () => {
   return baseUrl === '/' ? '' : baseUrl;
 };
 
+const summaryYears = getSummaryYears(activities);
+const defaultYearSummaryYear = getDefaultYearSummaryYear(summaryYears);
+const yearSummaryUrl = defaultYearSummaryYear
+  ? `${getBasePath()}/summary/${defaultYearSummaryYear}`
+  : `${getBasePath()}/summary`;
+
 const data: ISiteMetadataResult = {
   siteTitle: 'Running Page',
   siteUrl: 'https://hugh-zhan9.github.io/running_page',
@@ -27,6 +39,10 @@ const data: ISiteMetadataResult = {
     {
       name: 'Summary',
       url: `${getBasePath()}/summary`,
+    },
+    {
+      name: '年度总结',
+      url: yearSummaryUrl,
     },
     {
       name: 'Blog',

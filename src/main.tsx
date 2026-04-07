@@ -12,6 +12,7 @@ import {
 import '@/styles/index.css';
 import { withOptionalGAPageTracking } from './utils/trackRoute';
 import HomePage from '@/pages/total';
+import SummaryRoutePage from '@/pages/summary';
 import { ActivitiesProvider } from '@/contexts/ActivitiesContext';
 
 if (USE_GOOGLE_ANALYTICS) {
@@ -27,6 +28,10 @@ const routes = createBrowserRouter(
     {
       path: 'summary',
       element: withOptionalGAPageTracking(<HomePage />),
+    },
+    {
+      path: 'summary/:year',
+      element: withOptionalGAPageTracking(<SummaryRoutePage />),
     },
     {
       path: '*',

@@ -106,3 +106,15 @@ Changed Files:
 - `src/utils/map.ts`
 - `src/utils/map.test.ts`
 ----------------------------------------
+## [2026-04-07 19:48] [Feature]
+- **Change**: 新增按年份生成的年度总结页面，保留原 /summary，并新增默认跳转到当前年减一的年度总结入口。
+- **Risk Analysis**: 主要风险在于年度统计口径与现有活动数据格式的兼容性，以及年度总结下载卡片在不同浏览器中的表现仍有差异；已通过单元测试、构建和本地页面检查覆盖主要路径。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `src/main.tsx`
+- `src/static/site-metadata.ts`
+- `src/pages/summary.tsx`
+- `src/pages/summary.module.css`
+- `src/utils/yearSummary.ts`
+- `src/utils/yearSummary.test.ts`
+----------------------------------------
