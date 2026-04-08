@@ -142,3 +142,10 @@ Changed Files:
 - `run_page/gpxtrackposter/track.py`
 - `run_page/gpxtrackposter/test_track.py`
 ----------------------------------------
+## [2026-04-08 10:22] [Bugfix]
+- **Change**: 调整 Keep 同步测试导入方式，修复 Ruff E402 并避免重复导入异常
+- **Risk Analysis**: 风险较低，仅影响测试文件导入方式，不改生产逻辑；测试已验证通过，主要风险是不同 Python 版本下路径插入行为存在细微差异，但当前 CI 场景可覆盖。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `run_page/test_keep_sync.py`
+----------------------------------------
