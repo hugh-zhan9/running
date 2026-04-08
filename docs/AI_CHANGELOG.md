@@ -149,3 +149,10 @@ Changed Files:
 - **Changed Files**:
 - `run_page/test_keep_sync.py`
 ----------------------------------------
+## [2026-04-08 16:15] [Bugfix]
+- **Change**: 修复年度总结页触摸事件类型写法导致的 ESLint 报错
+- **Risk Analysis**: 风险较低，仅是 TSX 类型导入方式调整，不影响实际滑动翻页行为；已对该文件完成 prettier 和 eslint 校验。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `src/pages/summary.tsx`
+----------------------------------------
