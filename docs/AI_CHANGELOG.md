@@ -118,3 +118,11 @@ Changed Files:
 - `src/utils/yearSummary.ts`
 - `src/utils/yearSummary.test.ts`
 ----------------------------------------
+## [2026-04-08 09:51] [Bugfix]
+- **Change**: 兼容 Keep GPX 点位时间戳的多种单位，避免生成 7000 年异常时间
+- **Risk Analysis**: 风险主要在 Keep 导出时间归一化逻辑，可能影响少量历史 Keep 轨迹点时间；当前实现优先按 startTime 选择最接近的候选值，正常旧格式和当前仓库数据应保持不变，但仍建议在 CI 中再验证 gpx_sync 全链路。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `run_page/keep_sync.py`
+- `run_page/test_keep_sync.py`
+----------------------------------------

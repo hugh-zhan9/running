@@ -53,6 +53,43 @@ TIMESTAMP_THRESHOLD_IN_DECISECOND = 3_600_000  # Threshold for target timestamp 
 TRANS_GCJ02_TO_WGS84 = True
 
 
+def normalize_keep_point_timestamp_seconds(point_timestamp, start_time):
+    """
+    Keep point timestamps appear in multiple units across different API versions:
+    1. relative deciseconds since activity start
+    2. absolute deciseconds since epoch
+    3. absolute milliseconds since epoch
+    4. absolute milliseconds scaled by 100
+
+    Normalize all of them to UTC epoch seconds.
+    """
+    point_timestamp = int(point_timestamp)
+    start_time = int(start_time or 0)
+
+    if point_timestamp <= TIMESTAMP_THRESHOLD_IN_DECISECOND:
+        return start_time // 1000 + point_timestamp / 10
+
+    candidates = [
+        point_timestamp / 10,
+        point_timestamp / 1000,
+        point_timestamp / 100000,
+    ]
+    target_seconds = start_time / 1000 if start_time else None
+
+    plausible_candidates = [
+        candidate for candidate in candidates if 946684800 <= candidate <= 4102444800
+    ]
+    if not plausible_candidates:
+        plausible_candidates = candidates
+
+    if target_seconds is None:
+        return plausible_candidates[0]
+
+    return min(
+        plausible_candidates, key=lambda candidate: abs(candidate - target_seconds)
+    )
+
+
 def login(session, mobile, password):
     headers = {
         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0",
@@ -267,21 +304,13 @@ def parse_points_to_gpx(run_points_data, start_time, sport_type):
         gpx_data (str): GPX data in string format.
     """
     points_dict_list = []
-    # early timestamp fields in keep's data stands for delta time, but in newly data timestamp field stands for exactly time,
-    # so it doesn't need to plus extra start_time
-    if (
-        run_points_data
-        and run_points_data[0]["timestamp"] > TIMESTAMP_THRESHOLD_IN_DECISECOND
-    ):
-        start_time = 0
-
     for point in run_points_data:
         points_dict = {
             "latitude": point["latitude"],
             "longitude": point["longitude"],
             # note that the timestamp of a point is decisecond(分秒)
             "time": datetime.fromtimestamp(
-                (start_time // 1000 + point["timestamp"] // 10),
+                normalize_keep_point_timestamp_seconds(point["timestamp"], start_time),
                 tz=timezone.utc,
             ),
             "elevation": point.get("altitude"),
