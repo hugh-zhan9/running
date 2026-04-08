@@ -14,7 +14,6 @@ import {
 
 const SUMMARY_YEARS = getSummaryYears(activities);
 const LAST_PAGE_INDEX = 5;
-const SWIPE_THRESHOLD = 56;
 
 const formatDistance = (distanceKm: number): string => distanceKm.toFixed(1);
 
@@ -188,13 +187,7 @@ const YearSummaryScreen = ({
   const summary = useMemo(() => buildYearSummary(year, activities), [year]);
   const [pageIndex, setPageIndex] = useState(0);
   const [mobilePagerOpen, setMobilePagerOpen] = useState(false);
-  const rootRef = useRef<HTMLElement | null>(null);
   const recapRef = useRef<HTMLDivElement | null>(null);
-  const touchGestureRef = useRef<{
-    startX: number;
-    startY: number;
-    lockingVertical: boolean;
-  } | null>(null);
 
   useEffect(() => {
     setPageIndex(0);
@@ -220,84 +213,6 @@ const YearSummaryScreen = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  useEffect(() => {
-    const root = rootRef.current;
-
-    if (!root) {
-      return;
-    }
-
-    const handleTouchStart = (event: globalThis.TouchEvent) => {
-      const touch = event.touches[0];
-      touchGestureRef.current = {
-        startX: touch.clientX,
-        startY: touch.clientY,
-        lockingVertical: false,
-      };
-    };
-
-    const handleTouchMove = (event: globalThis.TouchEvent) => {
-      const gesture = touchGestureRef.current;
-
-      if (!gesture) {
-        return;
-      }
-
-      const touch = event.touches[0];
-      const deltaX = touch.clientX - gesture.startX;
-      const deltaY = touch.clientY - gesture.startY;
-
-      if (
-        !gesture.lockingVertical &&
-        Math.abs(deltaY) >= SWIPE_THRESHOLD / 2 &&
-        Math.abs(deltaY) > Math.abs(deltaX)
-      ) {
-        gesture.lockingVertical = true;
-      }
-
-      if (gesture.lockingVertical) {
-        event.preventDefault();
-      }
-    };
-
-    const handleTouchEnd = (event: globalThis.TouchEvent) => {
-      const gesture = touchGestureRef.current;
-      touchGestureRef.current = null;
-
-      if (!gesture) {
-        return;
-      }
-
-      const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - gesture.startX;
-      const deltaY = touch.clientY - gesture.startY;
-
-      if (
-        Math.abs(deltaY) < SWIPE_THRESHOLD ||
-        Math.abs(deltaY) <= Math.abs(deltaX)
-      ) {
-        return;
-      }
-
-      if (deltaY < 0) {
-        setPageIndex((current) => Math.min(LAST_PAGE_INDEX, current + 1));
-        return;
-      }
-
-      setPageIndex((current) => Math.max(0, current - 1));
-    };
-
-    root.addEventListener('touchstart', handleTouchStart, { passive: true });
-    root.addEventListener('touchmove', handleTouchMove, { passive: false });
-    root.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-    return () => {
-      root.removeEventListener('touchstart', handleTouchStart);
-      root.removeEventListener('touchmove', handleTouchMove);
-      root.removeEventListener('touchend', handleTouchEnd);
-    };
   }, []);
 
   if (!summary) {
@@ -604,7 +519,7 @@ const YearSummaryScreen = ({
   ];
 
   return (
-    <main className={styles.root} ref={rootRef}>
+    <main className={styles.root}>
       <Helmet>
         <title>{year} 年度总结</title>
       </Helmet>

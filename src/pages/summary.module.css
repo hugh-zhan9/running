@@ -10,9 +10,7 @@
   --summary-card: rgba(255, 255, 255, 0.05);
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
-  overscroll-behavior: none;
-  touch-action: pan-x;
+  overflow-x: hidden;
   color: var(--summary-text);
   background: linear-gradient(90deg, var(--summary-bg-soft), transparent 48%),
     radial-gradient(circle at 20% 30%, rgba(122, 84, 21, 0.2), transparent 35%),
