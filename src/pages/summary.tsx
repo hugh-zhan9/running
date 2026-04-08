@@ -97,8 +97,6 @@ const SummaryFooter = ({
       <span className={styles.keycap}>回车</span>
       <span className={styles.dot}>，或</span>
       <span className={styles.keycap}>↓</span>
-      <span className={styles.dot}>，手机可</span>
-      <span className={styles.keycap}>上下滑动</span>
     </div>
     <div className={styles.pageIndicator}>
       {currentPage + 1} / {totalPages}
@@ -109,36 +107,48 @@ const SummaryFooter = ({
 const MobilePager = ({
   currentPage,
   totalPages,
+  isOpen,
   onPrevious,
   onNext,
+  onToggle,
 }: {
   currentPage: number;
   totalPages: number;
+  isOpen: boolean;
   onPrevious: () => void;
   onNext: () => void;
+  onToggle: () => void;
 }) => (
   <div className={styles.mobilePager}>
+    {isOpen ? (
+      <button
+        className={styles.mobilePagerButton}
+        disabled={currentPage === 0}
+        onClick={onPrevious}
+        aria-label="上一页"
+        type="button"
+      >
+        ‹
+      </button>
+    ) : null}
     <button
-      className={styles.mobilePagerButton}
-      disabled={currentPage === 0}
-      onClick={onPrevious}
-      aria-label="上一页"
+      className={styles.mobilePagerTrigger}
+      onClick={onToggle}
       type="button"
     >
-      ‹
-    </button>
-    <span className={styles.mobilePagerText}>
       {currentPage + 1} / {totalPages}
-    </span>
-    <button
-      className={styles.mobilePagerButton}
-      disabled={currentPage === totalPages - 1}
-      onClick={onNext}
-      aria-label="下一页"
-      type="button"
-    >
-      ›
     </button>
+    {isOpen ? (
+      <button
+        className={styles.mobilePagerButton}
+        disabled={currentPage === totalPages - 1}
+        onClick={onNext}
+        aria-label="下一页"
+        type="button"
+      >
+        ›
+      </button>
+    ) : null}
   </div>
 );
 
@@ -177,6 +187,7 @@ const YearSummaryScreen = ({
   const { siteTitle, siteUrl } = useSiteMetadata();
   const summary = useMemo(() => buildYearSummary(year, activities), [year]);
   const [pageIndex, setPageIndex] = useState(0);
+  const [mobilePagerOpen, setMobilePagerOpen] = useState(false);
   const rootRef = useRef<HTMLElement | null>(null);
   const recapRef = useRef<HTMLDivElement | null>(null);
   const touchGestureRef = useRef<{
@@ -188,6 +199,10 @@ const YearSummaryScreen = ({
   useEffect(() => {
     setPageIndex(0);
   }, [year]);
+
+  useEffect(() => {
+    setMobilePagerOpen(false);
+  }, [pageIndex, year]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -615,8 +630,10 @@ const YearSummaryScreen = ({
       <SummaryFooter currentPage={pageIndex} totalPages={pages.length} />
       <MobilePager
         currentPage={pageIndex}
+        isOpen={mobilePagerOpen}
         onNext={goNextPage}
         onPrevious={goPreviousPage}
+        onToggle={() => setMobilePagerOpen((current) => !current)}
         totalPages={pages.length}
       />
     </main>

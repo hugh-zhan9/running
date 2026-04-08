@@ -635,6 +635,7 @@
   }
 
   .mobilePagerButton,
+  .mobilePagerTrigger,
   .mobilePagerText {
     font-family: var(--font-mono);
     font-size: 0.72rem;
@@ -652,6 +653,15 @@
     background: rgba(255, 255, 255, 0.04);
     font-size: 1rem;
     line-height: 1;
+  }
+
+  .mobilePagerTrigger {
+    min-width: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 999px;
+    padding: 0.42rem 0.68rem;
+    color: var(--summary-muted);
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .mobilePagerButton:disabled {
