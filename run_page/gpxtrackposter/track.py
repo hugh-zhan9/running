@@ -69,6 +69,8 @@ class Track:
                 raise TrackLoadError("Empty GPX file")
             with open(file_name, "r", encoding="utf-8", errors="ignore") as file:
                 self._load_gpx_data(mod_gpxpy.parse(file))
+        except TrackLoadError:
+            raise
         except Exception as e:
             print(
                 f"Something went wrong when loading GPX. for file {self.file_names[0]}, we just ignore this file and continue"
@@ -85,6 +87,8 @@ class Track:
             if os.path.getsize(file_name) == 0:
                 raise TrackLoadError("Empty TCX file")
             self._load_tcx_data(tcx.read(file_name), file_name=file_name)
+        except TrackLoadError:
+            raise
         except Exception as e:
             print(
                 f"Something went wrong when loading TCX. for file {self.file_names[0]}, we just ignore this file and continue"
@@ -116,6 +120,8 @@ class Track:
                 )
                 return
             self._load_fit_data(messages)
+        except TrackLoadError:
+            raise
         except Exception as e:
             print(
                 f"Something went wrong when loading FIT. for file {self.file_names[0]}, we just ignore this file and continue"

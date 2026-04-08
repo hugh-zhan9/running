@@ -134,3 +134,11 @@ Changed Files:
 - `run_page/gpxtrackposter/track.py`
 - `run_page/gpxtrackposter/test_track.py`
 ----------------------------------------
+## [2026-04-08 10:15] [Critical-Fix]
+- **Change**: 修复轨迹加载阶段吞掉异常导致坏对象继续入库的问题
+- **Risk Analysis**: 风险主要在 TrackLoadError 现在会向上抛出，加载器会直接跳过坏文件；这会减少脏数据入库，但如果有依赖旧的吞异常行为的边角逻辑，可能影响少量容错路径。当前已有针对 load_gpx 传播异常的测试。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `run_page/gpxtrackposter/track.py`
+- `run_page/gpxtrackposter/test_track.py`
+----------------------------------------
