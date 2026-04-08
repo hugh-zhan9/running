@@ -125,7 +125,8 @@ const getRoundedDistanceBucket = (distanceKm: number): number => {
 
 const sortByDate = (a: SummaryActivity, b: SummaryActivity): number => {
   return (
-    parseDate(a.start_date_local).getTime() - parseDate(b.start_date_local).getTime()
+    parseDate(a.start_date_local).getTime() -
+    parseDate(b.start_date_local).getTime()
   );
 };
 
@@ -140,12 +141,16 @@ const getRunningActivitiesForYear = (
 };
 
 export const getSummaryYears = (activities: SummaryActivity[]): string[] => {
-  return [...new Set(
-    activities
-      .filter((activity) => normalizeActivityType(activity.type) === 'running')
-      .map((activity) => activity.start_date_local.slice(0, 4))
-      .filter(Boolean)
-  )].sort();
+  return [
+    ...new Set(
+      activities
+        .filter(
+          (activity) => normalizeActivityType(activity.type) === 'running'
+        )
+        .map((activity) => activity.start_date_local.slice(0, 4))
+        .filter(Boolean)
+    ),
+  ].sort();
 };
 
 export const getLatestSummaryYear = (years: string[]): string | null => {
@@ -301,10 +306,9 @@ const buildMostFrequentDistanceBucket = (
     buckets.set(bucket, (buckets.get(bucket) ?? 0) + 1);
   }
 
-  const [distanceKm, count] =
-    [...buckets.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0] ?? [
-      0, 0,
-    ];
+  const [distanceKm, count] = [...buckets.entries()].sort(
+    (a, b) => b[1] - a[1] || b[0] - a[0]
+  )[0] ?? [0, 0];
 
   return {
     label: `${distanceKm}K`,
@@ -332,12 +336,18 @@ export const buildYearSummary = (
     0
   );
   const dailyTotals = buildDailyTotals(runs);
-  const longestRunActivity = [...runs].sort((a, b) => b.distance - a.distance)[0];
+  const longestRunActivity = [...runs].sort(
+    (a, b) => b.distance - a.distance
+  )[0];
   const longestDurationActivity = [...runs].sort(
-    (a, b) => parseDurationToSeconds(b.moving_time) - parseDurationToSeconds(a.moving_time)
+    (a, b) =>
+      parseDurationToSeconds(b.moving_time) -
+      parseDurationToSeconds(a.moving_time)
   )[0];
   const longestRunDate = parseDate(longestRunActivity.start_date_local);
-  const longestDurationDate = parseDate(longestDurationActivity.start_date_local);
+  const longestDurationDate = parseDate(
+    longestDurationActivity.start_date_local
+  );
 
   return {
     year,
@@ -356,8 +366,13 @@ export const buildYearSummary = (
       activity: longestRunActivity,
     },
     longestDuration: {
-      distanceKm: clampPrecision(toKilometers(longestDurationActivity.distance), 1),
-      durationSeconds: parseDurationToSeconds(longestDurationActivity.moving_time),
+      distanceKm: clampPrecision(
+        toKilometers(longestDurationActivity.distance),
+        1
+      ),
+      durationSeconds: parseDurationToSeconds(
+        longestDurationActivity.moving_time
+      ),
       dateLabel: getDateLabel(longestDurationDate),
       activity: longestDurationActivity,
     },

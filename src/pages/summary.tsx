@@ -166,7 +166,9 @@ const YearSummaryScreen = ({
     return null;
   }
 
-  const weeklyAverage = (summary.totalDistanceKm / summary.weeklyTotals.length).toFixed(1);
+  const weeklyAverage = (
+    summary.totalDistanceKm / summary.weeklyTotals.length
+  ).toFixed(1);
   const topDays = getTopHighlightDays(summary.monthlyDayColumns);
 
   const pages = [
@@ -183,7 +185,9 @@ const YearSummaryScreen = ({
     <section key="weekly" className={styles.twoColumnPage}>
       <div className={styles.copyBlock}>
         <p className={styles.eyebrow}>总里程</p>
-        <div className={styles.megaValue}>{formatDistance(summary.totalDistanceKm)}</div>
+        <div className={styles.megaValue}>
+          {formatDistance(summary.totalDistanceKm)}
+        </div>
         <p className={styles.unit}>公里</p>
         <p className={styles.supporting}>周均 {weeklyAverage} 公里</p>
       </div>
@@ -195,7 +199,9 @@ const YearSummaryScreen = ({
           >
             <span className={styles.weekLabel}>第{week.week}周</span>
             {week.distanceKm > 0 ? (
-              <span className={styles.weekValue}>{week.distanceKm.toFixed(1)}</span>
+              <span className={styles.weekValue}>
+                {week.distanceKm.toFixed(1)}
+              </span>
             ) : null}
           </div>
         ))}
@@ -267,7 +273,9 @@ const YearSummaryScreen = ({
               {summary.longestRun.distanceKm.toFixed(1)} <span>公里</span>
             </div>
           </div>
-          <div className={styles.highlightMeta}>{summary.longestRun.dateLabel}</div>
+          <div className={styles.highlightMeta}>
+            {summary.longestRun.dateLabel}
+          </div>
         </article>
         <article className={styles.highlightRow}>
           <div className={styles.highlightIndex}>2</div>
@@ -277,7 +285,9 @@ const YearSummaryScreen = ({
               {formatDuration(summary.longestDuration.durationSeconds)}
             </div>
           </div>
-          <div className={styles.highlightMeta}>{summary.longestDuration.dateLabel}</div>
+          <div className={styles.highlightMeta}>
+            {summary.longestDuration.dateLabel}
+          </div>
         </article>
         <article className={styles.highlightRow}>
           <div className={styles.highlightIndex}>3</div>
@@ -296,7 +306,9 @@ const YearSummaryScreen = ({
     <section key="monthly" className={styles.monthlyPage}>
       <div className={styles.copyBlock}>
         <h2 className={styles.sectionTitle}>日积月累，坚持已成习惯。</h2>
-        <p className={styles.leadSmall}>{getIntroCopy(year, summary.totalDistanceKm)}</p>
+        <p className={styles.leadSmall}>
+          {getIntroCopy(year, summary.totalDistanceKm)}
+        </p>
         <div className={styles.metricRow}>
           <div className={styles.metricBlock}>
             <span className={styles.metricLabel}>跑步天数</span>
@@ -304,7 +316,9 @@ const YearSummaryScreen = ({
           </div>
           <div className={styles.metricBlock}>
             <span className={styles.metricLabel}>最长连续</span>
-            <span className={styles.metricValue}>{summary.longestStreakDays}天</span>
+            <span className={styles.metricValue}>
+              {summary.longestStreakDays}天
+            </span>
           </div>
         </div>
       </div>
@@ -322,7 +336,9 @@ const YearSummaryScreen = ({
                       : day.distanceKm > 0
                         ? styles.dayDotLight
                         : styles.dayDotEmpty;
-                const accent = topDays.has(day.dateKey) ? styles.dayDotAccent : '';
+                const accent = topDays.has(day.dateKey)
+                  ? styles.dayDotAccent
+                  : '';
 
                 return (
                   <div
@@ -379,7 +395,9 @@ const YearSummaryScreen = ({
             </div>
             <div>
               <span>时间</span>
-              <strong>{Math.round(summary.totalMovingTimeSeconds / 3600)}</strong>
+              <strong>
+                {Math.round(summary.totalMovingTimeSeconds / 3600)}
+              </strong>
               <span>小时</span>
             </div>
             <div>
@@ -388,7 +406,9 @@ const YearSummaryScreen = ({
               <span>公里</span>
             </div>
           </div>
-          <div className={styles.recapSite}>{siteUrl.replace(/^https?:\/\//, '')}/summary/{year}</div>
+          <div className={styles.recapSite}>
+            {siteUrl.replace(/^https?:\/\//, '')}/summary/{year}
+          </div>
         </div>
         <div className={styles.recapGrid}>
           {summary.monthlyDayColumns.flatMap((column) =>
@@ -401,7 +421,9 @@ const YearSummaryScreen = ({
                     : day.distanceKm > 0
                       ? styles.dayDotLight
                       : styles.dayDotEmpty;
-              const accent = topDays.has(day.dateKey) ? styles.dayDotAccent : '';
+              const accent = topDays.has(day.dateKey)
+                ? styles.dayDotAccent
+                : '';
 
               return (
                 <div
@@ -418,7 +440,10 @@ const YearSummaryScreen = ({
           className={styles.primaryButton}
           onClick={() => {
             if (recapRef.current) {
-              void downloadNodeAsImage(recapRef.current, `running-summary-${year}.png`);
+              void downloadNodeAsImage(
+                recapRef.current,
+                `running-summary-${year}.png`
+              );
             }
           }}
           type="button"

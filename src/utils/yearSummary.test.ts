@@ -50,7 +50,10 @@ test('getSummaryYears returns sorted years with running activities only', () => 
     '2025'
   );
   assert.equal(
-    getDefaultYearSummaryYear(['2022', '2024'], new Date('2026-04-07T00:00:00')),
+    getDefaultYearSummaryYear(
+      ['2022', '2024'],
+      new Date('2026-04-07T00:00:00')
+    ),
     '2024'
   );
 });
