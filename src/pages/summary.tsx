@@ -1,4 +1,4 @@
-import { type TouchEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import activities from '@/data/activities';
@@ -141,6 +141,7 @@ const YearSummaryScreen = ({
   const { siteTitle, siteUrl } = useSiteMetadata();
   const summary = useMemo(() => buildYearSummary(year, activities), [year]);
   const [pageIndex, setPageIndex] = useState(0);
+  const rootRef = useRef<HTMLElement | null>(null);
   const recapRef = useRef<HTMLDivElement | null>(null);
   const touchGestureRef = useRef<{
     startX: number;
@@ -170,65 +171,83 @@ const YearSummaryScreen = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleTouchStart = (event: TouchEvent<HTMLElement>) => {
-    const touch = event.touches[0];
-    touchGestureRef.current = {
-      startX: touch.clientX,
-      startY: touch.clientY,
-      lockingVertical: false,
+  useEffect(() => {
+    const root = rootRef.current;
+
+    if (!root) {
+      return;
+    }
+
+    const handleTouchStart = (event: globalThis.TouchEvent) => {
+      const touch = event.touches[0];
+      touchGestureRef.current = {
+        startX: touch.clientX,
+        startY: touch.clientY,
+        lockingVertical: false,
+      };
     };
-  };
 
-  const handleTouchMove = (event: TouchEvent<HTMLElement>) => {
-    const gesture = touchGestureRef.current;
+    const handleTouchMove = (event: globalThis.TouchEvent) => {
+      const gesture = touchGestureRef.current;
 
-    if (!gesture) {
-      return;
-    }
+      if (!gesture) {
+        return;
+      }
 
-    const touch = event.touches[0];
-    const deltaX = touch.clientX - gesture.startX;
-    const deltaY = touch.clientY - gesture.startY;
+      const touch = event.touches[0];
+      const deltaX = touch.clientX - gesture.startX;
+      const deltaY = touch.clientY - gesture.startY;
 
-    if (
-      !gesture.lockingVertical &&
-      Math.abs(deltaY) >= SWIPE_THRESHOLD / 2 &&
-      Math.abs(deltaY) > Math.abs(deltaX)
-    ) {
-      gesture.lockingVertical = true;
-    }
+      if (
+        !gesture.lockingVertical &&
+        Math.abs(deltaY) >= SWIPE_THRESHOLD / 2 &&
+        Math.abs(deltaY) > Math.abs(deltaX)
+      ) {
+        gesture.lockingVertical = true;
+      }
 
-    if (gesture.lockingVertical) {
-      event.preventDefault();
-    }
-  };
+      if (gesture.lockingVertical) {
+        event.preventDefault();
+      }
+    };
 
-  const handleTouchEnd = (event: TouchEvent<HTMLElement>) => {
-    const gesture = touchGestureRef.current;
-    touchGestureRef.current = null;
+    const handleTouchEnd = (event: globalThis.TouchEvent) => {
+      const gesture = touchGestureRef.current;
+      touchGestureRef.current = null;
 
-    if (!gesture) {
-      return;
-    }
+      if (!gesture) {
+        return;
+      }
 
-    const touch = event.changedTouches[0];
-    const deltaX = touch.clientX - gesture.startX;
-    const deltaY = touch.clientY - gesture.startY;
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - gesture.startX;
+      const deltaY = touch.clientY - gesture.startY;
 
-    if (
-      Math.abs(deltaY) < SWIPE_THRESHOLD ||
-      Math.abs(deltaY) <= Math.abs(deltaX)
-    ) {
-      return;
-    }
+      if (
+        Math.abs(deltaY) < SWIPE_THRESHOLD ||
+        Math.abs(deltaY) <= Math.abs(deltaX)
+      ) {
+        return;
+      }
 
-    if (deltaY < 0) {
-      setPageIndex((current) => Math.min(LAST_PAGE_INDEX, current + 1));
-      return;
-    }
+      if (deltaY < 0) {
+        setPageIndex((current) => Math.min(LAST_PAGE_INDEX, current + 1));
+        return;
+      }
 
-    setPageIndex((current) => Math.max(0, current - 1));
-  };
+      setPageIndex((current) => Math.max(0, current - 1));
+    };
+
+    root.addEventListener('touchstart', handleTouchStart, { passive: true });
+    root.addEventListener('touchmove', handleTouchMove, { passive: false });
+    root.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      root.removeEventListener('touchstart', handleTouchStart);
+      root.removeEventListener('touchmove', handleTouchMove);
+      root.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, []);
 
   if (!summary) {
     return null;
@@ -530,12 +549,7 @@ const YearSummaryScreen = ({
   ];
 
   return (
-    <main
-      className={styles.root}
-      onTouchEnd={handleTouchEnd}
-      onTouchMove={handleTouchMove}
-      onTouchStart={handleTouchStart}
-    >
+    <main className={styles.root} ref={rootRef}>
       <Helmet>
         <title>{year} 年度总结</title>
       </Helmet>
