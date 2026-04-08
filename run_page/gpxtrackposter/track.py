@@ -159,6 +159,32 @@ class Track:
     def __make_run_id(time_stamp):
         return int(datetime.datetime.timestamp(time_stamp) * 1000)
 
+    def _validate_loaded_track(self):
+        def _validate_dt(label, value):
+            if value is None:
+                raise TrackLoadError(f"Track has no {label}.")
+            if value.year < 2000 or value.year > 2100:
+                raise TrackLoadError(f"Track has invalid {label}: {value}.")
+
+        _validate_dt("start time", self.start_time)
+        _validate_dt("end time", self.end_time)
+        _validate_dt("local start time", self.start_time_local)
+        _validate_dt("local end time", self.end_time_local)
+
+        if self.end_time < self.start_time:
+            raise TrackLoadError("Track end time is earlier than start time.")
+        if self.end_time_local < self.start_time_local:
+            raise TrackLoadError(
+                "Track local end time is earlier than local start time."
+            )
+
+        moving_time = self.moving_dict.get("moving_time")
+        elapsed_time = self.moving_dict.get("elapsed_time")
+        if moving_time is not None and moving_time.total_seconds() < 0:
+            raise TrackLoadError("Track moving time is negative.")
+        if elapsed_time is not None and elapsed_time.total_seconds() < 0:
+            raise TrackLoadError("Track elapsed time is negative.")
+
     def _load_tcx_data(self, tcx, file_name):
         self.length = float(tcx.distance)
         time_values = [i.time for i in tcx.trackpoints]
@@ -202,6 +228,7 @@ class Track:
             "elapsed_time": datetime.timedelta(seconds=elapsed_time),
             "average_speed": self.length / moving_time if moving_time else 0,
         }
+        self._validate_loaded_track()
 
     def _calc_moving_time(self, trackpoints, seconds_threshold=10):
         moving_time = 0
@@ -300,6 +327,7 @@ class Track:
         self.moving_dict = self._get_moving_data(gpx, moving_time)
         self.elevation_gain = gpx.get_uphill_downhill().uphill
         self._load_gpx_extensions_data(gpx)
+        self._validate_loaded_track()
 
     def _load_gpx_extensions_item(self, gpx, item_name):
         """
@@ -429,6 +457,7 @@ class Track:
                 self.device = device_message["manufacturer"]
             if "garmin_product" in device_message:
                 self.device += " " + device_message["garmin_product"]
+        self._validate_loaded_track()
 
     def append(self, other):
         """Append other track to self."""

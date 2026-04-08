@@ -126,3 +126,11 @@ Changed Files:
 - `run_page/keep_sync.py`
 - `run_page/test_keep_sync.py`
 ----------------------------------------
+## [2026-04-08 10:10] [Critical-Fix]
+- **Change**: 增加轨迹解析后的时间合法性校验，跳过异常年份和负时长的 GPX 记录
+- **Risk Analysis**: 风险主要在解析层新增了更严格的拒绝条件，可能会过滤少量历史边界数据；但相比让 CI 和入库直接失败，这个取舍更稳妥，且测试已覆盖异常年份、结束早于开始、负时长三类问题。
+- **Risk Level**: S2（中级: 局部功能异常、可绕过但影响效率）
+- **Changed Files**:
+- `run_page/gpxtrackposter/track.py`
+- `run_page/gpxtrackposter/test_track.py`
+----------------------------------------
