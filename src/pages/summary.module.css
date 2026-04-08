@@ -536,6 +536,10 @@
   font-size: 0.85rem;
 }
 
+.mobilePager {
+  display: none;
+}
+
 .emptyState {
   position: relative;
   z-index: 1;
@@ -606,14 +610,58 @@
   }
 
   .footerHint {
-    left: 1rem;
-    bottom: 0.8rem;
-    font-size: 0.72rem;
+    display: none;
   }
 
   .pageIndicator {
-    right: 1rem;
-    bottom: 0.9rem;
+    display: none;
+  }
+
+  .mobilePager {
+    position: fixed;
+    left: 50%;
+    bottom: 0.85rem;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transform: translateX(-50%);
+    padding: 0.32rem 0.4rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+    background: rgba(14, 10, 7, 0.66);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16);
+  }
+
+  .mobilePagerButton,
+  .mobilePagerText {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .mobilePagerButton {
+    width: 1.9rem;
+    height: 1.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 999px;
+    color: var(--summary-text);
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .mobilePagerButton:disabled {
+    opacity: 0.28;
+  }
+
+  .mobilePagerText {
+    min-width: 3rem;
+    text-align: center;
+    color: var(--summary-muted);
   }
 
   .weekGrid {

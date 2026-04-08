@@ -106,6 +106,42 @@ const SummaryFooter = ({
   </>
 );
 
+const MobilePager = ({
+  currentPage,
+  totalPages,
+  onPrevious,
+  onNext,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPrevious: () => void;
+  onNext: () => void;
+}) => (
+  <div className={styles.mobilePager}>
+    <button
+      className={styles.mobilePagerButton}
+      disabled={currentPage === 0}
+      onClick={onPrevious}
+      aria-label="上一页"
+      type="button"
+    >
+      ‹
+    </button>
+    <span className={styles.mobilePagerText}>
+      {currentPage + 1} / {totalPages}
+    </span>
+    <button
+      className={styles.mobilePagerButton}
+      disabled={currentPage === totalPages - 1}
+      onClick={onNext}
+      aria-label="下一页"
+      type="button"
+    >
+      ›
+    </button>
+  </div>
+);
+
 const SummaryRoutePage = () => {
   const { year } = useParams();
   const latestYear = SUMMARY_YEARS.at(-1) ?? null;
@@ -257,6 +293,10 @@ const YearSummaryScreen = ({
     summary.totalDistanceKm / summary.weeklyTotals.length
   ).toFixed(1);
   const topDays = getTopHighlightDays(summary.monthlyDayColumns);
+  const goPreviousPage = () =>
+    setPageIndex((current) => Math.max(0, current - 1));
+  const goNextPage = () =>
+    setPageIndex((current) => Math.min(LAST_PAGE_INDEX, current + 1));
 
   const pages = [
     <section key="cover" className={styles.coverPage}>
@@ -573,6 +613,12 @@ const YearSummaryScreen = ({
         {pages[pageIndex]}
       </div>
       <SummaryFooter currentPage={pageIndex} totalPages={pages.length} />
+      <MobilePager
+        currentPage={pageIndex}
+        onNext={goNextPage}
+        onPrevious={goPreviousPage}
+        totalPages={pages.length}
+      />
     </main>
   );
 };
