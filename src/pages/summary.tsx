@@ -14,6 +14,7 @@ import {
 
 const SUMMARY_YEARS = getSummaryYears(activities);
 const LAST_PAGE_INDEX = 5;
+const SWIPE_THRESHOLD = 56;
 
 const formatDistance = (distanceKm: number): string => distanceKm.toFixed(1);
 
@@ -96,6 +97,8 @@ const SummaryFooter = ({
       <span className={styles.keycap}>回车</span>
       <span className={styles.dot}>，或</span>
       <span className={styles.keycap}>↓</span>
+      <span className={styles.dot}>，手机可</span>
+      <span className={styles.keycap}>上下滑动</span>
     </div>
     <div className={styles.pageIndicator}>
       {currentPage + 1} / {totalPages}
@@ -139,6 +142,7 @@ const YearSummaryScreen = ({
   const summary = useMemo(() => buildYearSummary(year, activities), [year]);
   const [pageIndex, setPageIndex] = useState(0);
   const recapRef = useRef<HTMLDivElement | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     setPageIndex(0);
@@ -161,6 +165,38 @@ const YearSummaryScreen = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLElement>) => {
+    const touch = event.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
+    const touchStart = touchStartRef.current;
+    touchStartRef.current = null;
+
+    if (!touchStart) {
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStart.x;
+    const deltaY = touch.clientY - touchStart.y;
+
+    if (
+      Math.abs(deltaY) < SWIPE_THRESHOLD ||
+      Math.abs(deltaY) <= Math.abs(deltaX)
+    ) {
+      return;
+    }
+
+    if (deltaY < 0) {
+      setPageIndex((current) => Math.min(LAST_PAGE_INDEX, current + 1));
+      return;
+    }
+
+    setPageIndex((current) => Math.max(0, current - 1));
+  };
 
   if (!summary) {
     return null;
@@ -462,7 +498,11 @@ const YearSummaryScreen = ({
   ];
 
   return (
-    <main className={styles.root}>
+    <main
+      className={styles.root}
+      onTouchEnd={handleTouchEnd}
+      onTouchStart={handleTouchStart}
+    >
       <Helmet>
         <title>{year} 年度总结</title>
       </Helmet>
