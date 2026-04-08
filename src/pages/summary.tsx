@@ -142,7 +142,11 @@ const YearSummaryScreen = ({
   const summary = useMemo(() => buildYearSummary(year, activities), [year]);
   const [pageIndex, setPageIndex] = useState(0);
   const recapRef = useRef<HTMLDivElement | null>(null);
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchGestureRef = useRef<{
+    startX: number;
+    startY: number;
+    lockingVertical: boolean;
+  } | null>(null);
 
   useEffect(() => {
     setPageIndex(0);
@@ -168,20 +172,48 @@ const YearSummaryScreen = ({
 
   const handleTouchStart = (event: TouchEvent<HTMLElement>) => {
     const touch = event.touches[0];
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    touchGestureRef.current = {
+      startX: touch.clientX,
+      startY: touch.clientY,
+      lockingVertical: false,
+    };
+  };
+
+  const handleTouchMove = (event: TouchEvent<HTMLElement>) => {
+    const gesture = touchGestureRef.current;
+
+    if (!gesture) {
+      return;
+    }
+
+    const touch = event.touches[0];
+    const deltaX = touch.clientX - gesture.startX;
+    const deltaY = touch.clientY - gesture.startY;
+
+    if (
+      !gesture.lockingVertical &&
+      Math.abs(deltaY) >= SWIPE_THRESHOLD / 2 &&
+      Math.abs(deltaY) > Math.abs(deltaX)
+    ) {
+      gesture.lockingVertical = true;
+    }
+
+    if (gesture.lockingVertical) {
+      event.preventDefault();
+    }
   };
 
   const handleTouchEnd = (event: TouchEvent<HTMLElement>) => {
-    const touchStart = touchStartRef.current;
-    touchStartRef.current = null;
+    const gesture = touchGestureRef.current;
+    touchGestureRef.current = null;
 
-    if (!touchStart) {
+    if (!gesture) {
       return;
     }
 
     const touch = event.changedTouches[0];
-    const deltaX = touch.clientX - touchStart.x;
-    const deltaY = touch.clientY - touchStart.y;
+    const deltaX = touch.clientX - gesture.startX;
+    const deltaY = touch.clientY - gesture.startY;
 
     if (
       Math.abs(deltaY) < SWIPE_THRESHOLD ||
@@ -501,6 +533,7 @@ const YearSummaryScreen = ({
     <main
       className={styles.root}
       onTouchEnd={handleTouchEnd}
+      onTouchMove={handleTouchMove}
       onTouchStart={handleTouchStart}
     >
       <Helmet>
