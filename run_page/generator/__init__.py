@@ -8,10 +8,9 @@ from gpxtrackposter import track_loader
 from sqlalchemy import func
 
 from polyline_processor import filter_out
+from synced_data_file_logger import save_synced_data_file_list
 
 from .db import Activity, init_db, update_or_create_activity
-
-from synced_data_file_logger import save_synced_data_file_list
 
 IGNORE_BEFORE_SAVING = os.getenv("IGNORE_BEFORE_SAVING", False)
 
@@ -158,6 +157,8 @@ class Generator:
                 activity.summary_polyline = filter_out(activity.summary_polyline)  # type: ignore
             activity_list.append(activity.to_dict())
 
+        # Export recorded routes and subtypes without inferring indoor activity
+        # from missing GPS or replacing it with a different activity's route.
         return activity_list
 
     def get_old_tracks_ids(self):

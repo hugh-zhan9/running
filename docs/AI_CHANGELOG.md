@@ -156,3 +156,8 @@ Changed Files:
 - **Changed Files**:
 - `src/pages/summary.tsx`
 ----------------------------------------
+
+## [2026-09-09] [Upstream Update]
+- **Change**: 同步上游 `1639f8b` 的 3.0 主题、依赖和同步脚本，迁移并保留 Classic 个人配置、免费地图、活动筛选、年度总结及 Keep/轨迹校验修复。
+- **Data**: 2363 个数据与静态产物文件完全保留；排除会自动改写历史活动类型和补造路线的上游逻辑，增加 SQLite 回归测试。
+- **Verification**: 前端 23 项、Python 18 项、类型检查、构建及页面验证通过。完整检查结果、已知 lint 问题和上游版本见 [同步记录](upstream-sync-2026-09-09.md)。首次交付后，用户已授权提交并推送到 `origin/master`。

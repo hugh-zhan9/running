@@ -1,14 +1,2 @@
-import { useContext } from 'react';
-import { ActivitiesContext } from '@/contexts/ActivitiesContext';
-
-const useActivities = () => {
-  const context = useContext(ActivitiesContext);
-
-  if (!context) {
-    throw new Error('useActivities must be used within an ActivitiesProvider');
-  }
-
-  return context;
-};
-
-export default useActivities;
+// 桥接文件：从 core 重新导出，保持旧路径向后兼容
+export * from '../core/hooks/useActivities';

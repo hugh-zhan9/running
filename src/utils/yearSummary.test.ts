@@ -99,6 +99,7 @@ test('buildYearSummary aggregates yearly metrics and day totals', () => {
     }),
   ]);
 
+  assert.ok(summary);
   assert.equal(summary.year, '2025');
   assert.equal(summary.totalRuns, 4);
   assert.equal(summary.totalDistanceKm, 23);
@@ -138,6 +139,7 @@ test('buildYearSummary creates weekly and monthly grids with zero-fill', () => {
     }),
   ]);
 
+  assert.ok(summary);
   assert.equal(summary.weeklyTotals.length, 53);
   assert.equal(summary.monthlyDayColumns.length, 12);
   assert.equal(summary.monthlyDayColumns[0].days.length, 31);
@@ -159,4 +161,18 @@ test('buildYearSummary returns null for years without running data', () => {
   ]);
 
   assert.equal(summary, null);
+});
+
+test('annual summary navigation prefers the last completed year', () => {
+  const now = new Date('2026-09-09T00:00:00Z');
+  assert.equal(
+    getDefaultYearSummaryYear(['2024', '2025', '2026'], now),
+    '2025'
+  );
+  assert.equal(
+    getDefaultYearSummaryYear(['2023', '2024', '2026'], now),
+    '2024'
+  );
+  assert.equal(getDefaultYearSummaryYear(['2026'], now), '2026');
+  assert.equal(getDefaultYearSummaryYear([], now), null);
 });

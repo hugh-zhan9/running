@@ -1,9 +1,3 @@
-import activities from '@/data/activities';
-import {
-  getDefaultYearSummaryYear,
-  getSummaryYears,
-} from '@/utils/yearSummary';
-
 interface ISiteMetadataResult {
   siteTitle: string;
   siteUrl: string;
@@ -17,14 +11,8 @@ interface ISiteMetadataResult {
 
 const getBasePath = () => {
   const baseUrl = import.meta.env.BASE_URL;
-  return baseUrl === '/' ? '' : baseUrl;
+  return baseUrl.replace(/\/$/, '');
 };
-
-const summaryYears = getSummaryYears(activities);
-const defaultYearSummaryYear = getDefaultYearSummaryYear(summaryYears);
-const yearSummaryUrl = defaultYearSummaryYear
-  ? `${getBasePath()}/summary/${defaultYearSummaryYear}`
-  : `${getBasePath()}/summary`;
 
 const data: ISiteMetadataResult = {
   siteTitle: 'Running Page',
@@ -42,7 +30,7 @@ const data: ISiteMetadataResult = {
     },
     {
       name: '年度总结',
-      url: yearSummaryUrl,
+      url: `${getBasePath()}/summary`,
     },
     {
       name: 'Blog',
